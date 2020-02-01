@@ -26,8 +26,6 @@ setup(
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Build Tools',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
         'Operating System :: OS Independent'
@@ -37,13 +35,12 @@ setup(
     install_requires=[
         'click',
         'bashlex',
-        'shutilwhich'
     ],
     extras_require={
         'dev': [],
         'test': ['pytest'],
     },
-    python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*',
+    python_requires='>=3.6',
     entry_points={
         'console_scripts': [
             'compiledb=compiledb.cli:cli',
