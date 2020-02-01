@@ -98,12 +98,19 @@ def merge_compdb(compdb, new_compdb, check_files=True):
     return [v for k, v in orig.items() if check_file(k)]
 
 
-def generate(infile, outfile, build_dir, exclude_files, overwrite=False, strict=False,
+def generate(infile, outfile, build_dir, exclude_files, extra_files=None, overwrite=False, strict=False,
              add_predefined_macros=False, use_full_path=False, command_style=False):
     try:
         r = generate_json_compdb(infile, proj_dir=build_dir, exclude_files=exclude_files,
                                  add_predefined_macros=add_predefined_macros, use_full_path=use_full_path,
                                  command_style=command_style)
+
+        # For extra_files, copy the config from the first entry in r.compdb.
+        if len(r.compdb) > 0:
+            first_entry = r.compdb[0]
+            for extra_file in (extra_files or []):
+                r.compdb.append(dict(first_entry, file=extra_file))
+
         compdb = [] if overwrite else load_json_compdb(outfile)
         compdb = merge_compdb(compdb, r.compdb, strict)
         write_json_compdb(compdb, outfile)

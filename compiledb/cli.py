@@ -35,12 +35,13 @@ class Options(object):
     """ Simple data class used to store command line options
     shared by all compiledb subcommands"""
 
-    def __init__(self, infile, outfile, build_dir, exclude_files, no_build,
+    def __init__(self, infile, outfile, build_dir, exclude_files, extra_files, no_build,
                  verbose, overwrite, strict, add_predefined_macros, use_full_path, command_style):
         self.infile = infile
         self.outfile = outfile
         self.build_dir = build_dir
         self.exclude_files = exclude_files
+        self.extra_files = extra_files
         self.verbose = verbose
         self.no_build = no_build
         self.overwrite = overwrite
@@ -63,6 +64,8 @@ class Options(object):
               help="Path to be used as initial build dir", default=os.getcwd())
 @click.option('-e', '--exclude', 'exclude_files', multiple=True,
               help="Regular expressions to exclude files.")
+@click.option('-E', '--extra', 'extra_files', multiple=True,
+              help="Extra files (e.g., headers) to include.")
 @click.option('-n', '--no-build', is_flag=True, default=False,
               help='Only generates compilation db file.')
 @click.option('-v', '--verbose', is_flag=True, default=False,
@@ -80,7 +83,7 @@ class Options(object):
               help='Output compilation database with single "command" '
               'string rather than the default "arguments" list of strings.')
 @click.pass_context
-def cli(ctx, infile, outfile, build_dir, exclude_files, no_build, verbose, overwrite, no_strict, add_predefined_macros,
+def cli(ctx, infile, outfile, build_dir, exclude_files, extra_files, no_build, verbose, overwrite, no_strict, add_predefined_macros,
         use_full_path, command_style):
     """Clang's Compilation Database generator for make-based build systems.
        When no subcommand is used it will parse build log/commands and generates
@@ -88,11 +91,11 @@ def cli(ctx, infile, outfile, build_dir, exclude_files, no_build, verbose, overw
     log_level = logging.DEBUG if verbose else logging.ERROR
     logging.basicConfig(level=log_level, format=None)
     if ctx.invoked_subcommand is None:
-        done = generate(infile, outfile, build_dir, exclude_files, overwrite, not no_strict, add_predefined_macros,
+        done = generate(infile, outfile, build_dir, exclude_files, extra_files, overwrite, not no_strict, add_predefined_macros,
                         use_full_path, command_style)
         exit(0 if done else 1)
     else:
-        ctx.obj = Options(infile, outfile, build_dir, exclude_files, no_build, verbose, overwrite, not no_strict,
+        ctx.obj = Options(infile, outfile, build_dir, exclude_files, extra_files, no_build, verbose, overwrite, not no_strict,
                           add_predefined_macros, use_full_path, command_style)
 
 
