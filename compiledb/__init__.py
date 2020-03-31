@@ -106,10 +106,16 @@ def generate(infile, outfile, build_dir, exclude_files, extra_files=None, overwr
                                  command_style=command_style)
 
         # For extra_files, copy the config from the first entry in r.compdb.
+        # Replace both the ['file'] entry and all appearances of ['file'] in
+        # ['arguments'] so that clangd refers to the correct file.
         if len(r.compdb) > 0:
             first_entry = r.compdb[0]
+            first_entry_file = first_entry['file']
             for extra_file in (extra_files or []):
-                r.compdb.append(dict(first_entry, file=extra_file))
+                arguments = [extra_file if arg == first_entry_file else arg
+                             for arg in first_entry['arguments']]
+                r.compdb.append(dict(first_entry,
+                                     arguments=arguments, file=extra_file))
 
         compdb = [] if overwrite else load_json_compdb(outfile)
         compdb = merge_compdb(compdb, r.compdb, strict)
